@@ -1,0 +1,170 @@
+8e    1000 1110 0001 00 -> proto id = 9092
+11    01 -> len len = 1 byte 
+93    len -> 147 bytes
+
+ChatAbstractServerMessage
+
+_channelFunc
+06    channel -> 6
+
+_contentFunc
+00    ->
+6a    UTF len = 106
+73    ->
+61    ->
+6c    ->
+75    ->
+74    ->
+20    ->
+6a    ->
+65    ->
+20    ->
+63    ->
+68    ->
+65    ->
+72    ->
+68    ->
+65    ->
+20    ->
+75    ->
+6e    ->
+65    ->
+20    ->
+70    ->
+65    ->
+72    ->
+73    ->
+6f    ->
+6e    ->
+6e    ->
+65    ->
+20    ->
+70    ->
+6f    ->
+75    ->
+72    ->
+20    ->
+6f    ->
+75    ->
+76    ->
+72    ->
+69    ->
+72    ->
+20    ->
+6c    ->
+61    ->
+20    ->
+67    ->
+72    ->
+69    ->
+6c    ->
+6c    ->
+65    ->
+20    ->
+73    ->
+75    ->
+72    ->
+20    ->
+69    ->
+6c    ->
+65    ->
+20    ->
+77    ->
+61    ->
+62    ->
+62    ->
+69    ->
+74    ->
+20    ->
+70    ->
+6f    ->
+75    ->
+72    ->
+20    ->
+6c    ->
+61    ->
+20    ->
+71    ->
+75    ->
+65    ->
+74    ->
+65    ->
+20    ->
+76    ->
+6f    ->
+79    ->
+61    ->
+67    ->
+65    ->
+20    ->
+61    ->
+75    ->
+20    ->
+63    ->
+65    ->
+6e    ->
+74    ->
+72    ->
+65    ->
+20    ->
+64    ->
+75    ->
+20    ->
+77    ->
+61    ->
+62    ->
+62    ->
+69    ->
+74    content = salut je cherhe une personne pour ouvrir la grille sur ile wabbit pour la quete voyage au centre du wabbit
+
+_timestampFunc
+61    ->
+43    ->
+9a    ->
+d3    tilmestamp = 1631820499
+
+_fingerprintFunc
+00    
+08    UTF len = 8
+75    ->
+75    ->
+69    ->
+37    ->
+31    ->
+32    ->
+34    ->
+66    fingerprint = uui7124f
+
+ChatServerMessage
+
+_senderIdFunc
+42    ->
+52    ->
+4b    ->
+5c    ->
+80    ->
+34    ->
+80    ->
+00    senderId = 3.14295058642E11
+
+_senderNameFunc
+00    ->
+08    UTF len = 8
+58    ->
+65    ->
+6e    ->
+61    ->
+6c    ->
+69    ->
+69    ->
+61    senderName = Xenaliia
+
+_prefixFunc
+00    ->
+00    prefix = 
+
+_senderAccountIdFunc
+09    ->
+51    ->
+99    ->
+41    senderAccountId = 156342593
