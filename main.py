@@ -1,18 +1,25 @@
 import pyshark
 import socket
+import sys
 from helper import getHeader, getProtocolIds
 
 # CONFIG #
 
-WHITELIST = ['']
-BLACKLIST = [
-    'GameMapMovementMessage', 'GameMapChangeOrientationMessage',
-    'GameRolePlayShowActorMessage', 'GameMapMovementRequestMessage',
-    'UpdateMapPlayersAgressableStatusMessage', 'GameMapMovementRequestMessage',
-    'ChatServerMessage'
+WHITELIST = [
+    'ExchangeTypesItemsExchangerDescriptionForUserMessage',
+    'ExchangeTypesExchangerDescriptionForUserMessage',
+    'ExchangeStartedBidBuyerMessage'
 ]
-USE_WHITELIST = False
-USE_BLACKLIST = True
+BLACKLIST = [
+    'GameMapMovementMessage',
+    'GameMapChangeOrientationMessage',
+    'GameRolePlayShowActorMessage',
+    'GameMapMovementRequestMessage',
+    'UpdateMapPlayersAgressableStatusMessage',
+]
+
+USE_WHITELIST = '-wl' in sys.argv
+USE_BLACKLIST = '-bl' in sys.argv
 
 # END CONFIG #
 
@@ -23,6 +30,8 @@ capture = pyshark.LiveCapture(interface='Ethernet',
 print('pyshark connected')
 
 for packet in capture.sniff_continuously():
+    if not hasattr(packet, 'data') or not hasattr(packet.data, 'data'):
+        continue
     data = packet.data.data
     receiving: bool = packet.ip.src == socket.gethostbyname(
         socket.gethostname())
@@ -34,6 +43,8 @@ for packet in capture.sniff_continuously():
         if USE_BLACKLIST and pid_type in BLACKLIST: continue
         if USE_WHITELIST and pid_type not in WHITELIST: continue
 
-        print("%s [id:%s] [type:%s]" % (prefix, pid, pid_type))
+        # SCAN HERE
+
+        print("%s [id:%s] [type:%s] %s" % (prefix, pid, pid_type, data))
     else:
         print("err NOT FOUND PID : %s" % (pid))
