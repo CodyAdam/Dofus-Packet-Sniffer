@@ -8,7 +8,7 @@ from helper import getHeader, getProtocolIds
 WHITELIST = [
     'ExchangeTypesItemsExchangerDescriptionForUserMessage',
     'ExchangeTypesExchangerDescriptionForUserMessage',
-    'ExchangeStartedBidBuyerMessage'
+    'ExchangeStartedBidBuyerMessage', 'ObjectAveragePricesMessage'
 ]
 BLACKLIST = [
     'GameMapMovementMessage',
