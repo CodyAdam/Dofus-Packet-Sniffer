@@ -7,7 +7,7 @@ class Packet:
         # READ HEADER
         h = self.readBytes(2)
         self._len = self.readBytes(0b00000011 & h)
-        self._pid = h >> 2
+        self._pid = str(h >> 2)
 
     def readBytes(self, len):
         '''return int value of the {len} first bytes'''
@@ -38,6 +38,9 @@ class Packet:
     def readBoolean(self):
         return self.readByte() != 0
 
+    def readInt(self):
+        return self.readBytes(4)
+
     def readUnsignedInt(self):
         return self.readBytes(4)
 
@@ -66,6 +69,37 @@ class Packet:
                 if value > 32767:
                     value = value - 65536
                 return value
+
+    def readVarLong(self):
+        b = 0
+        result = 0
+        i = 0
+        while True:
+            b = self.readUnsignedByte()
+            if (i == 28):
+                break
+            if (b < 128):
+                result.low = result.low | b << i
+            continue
+
+        if (b >= 128):
+            b = b & 127
+            result.low = result.low | b << i
+            result.high = b >> 4
+            i = 3
+            while (True):
+                b = input.readUnsignedByte()
+                if (i < 32):
+                    if (b < 128):
+                        break
+                    result.high = result.high | (b & 127) << i
+                i = i + 7
+            result.high = result.high | b << i
+            return result
+
+        result.low = result.low | b << i
+        result.high = b >> 4
+        return result
 
     def readUnsignedShort(self):
         return self.readBytes(2)
