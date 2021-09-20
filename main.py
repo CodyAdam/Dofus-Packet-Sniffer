@@ -11,7 +11,8 @@ from deserializer import deserialize
 WHITELIST = [
     'ExchangeTypesItemsExchangerDescriptionForUserMessage',
     'ExchangeTypesExchangerDescriptionForUserMessage',
-    'ExchangeStartedBidBuyerMessage', 'ObjectAveragePricesMessage'
+    # 'ExchangeStartedBidBuyerMessage',
+    'ObjectAveragePricesMessage'
 ]
 # WHITELIST = ['ChatServerMessage']
 BLACKLIST = [
@@ -28,10 +29,10 @@ USE_BLACKLIST = '-bl' in sys.argv
 # END CONFIG
 
 db = DataBase()
-print('ids loaded')
+print('Data base : loaded')
 capture = pyshark.LiveCapture(interface='Ethernet',
                               bpf_filter='tcp port 5555 and len > 66')
-print('pyshark connected')
+print('Pyshark : connected')
 
 for packet in capture.sniff_continuously():
     if not hasattr(packet, 'data') or not hasattr(packet.data, 'data'):
@@ -49,7 +50,8 @@ for packet in capture.sniff_continuously():
         obj = deserialize(p)
         if obj is not False:
             print("%s %s\n%s" %
-                  (prefix, p._init_data, json.dumps(obj, indent=2)))
+                  (prefix, p._init_data,
+                   json.dumps(obj, indent=2, ensure_ascii=False)))
         else:
             print("%s [id:%s] [type:%s] %s" %
                   (prefix, p._pid, pid_type, p._init_data))

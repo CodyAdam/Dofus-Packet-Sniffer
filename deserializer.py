@@ -7,10 +7,15 @@ db = DataBase()
 
 
 def deserialize(p: Packet):
-    if p._pid == 9092:
+    if p._pid == "9092":
         return deserialize_ChatServerMessage(p)
-    elif p._pid == 3091:
+    elif p._pid == "3091":
         return deserialize_ExchangeStartedBidBuyerMessage(p)
+    elif p._pid == "234":
+        return deserialize_ExchangeTypesExchangerDescriptionForUserMessage(p)
+    elif p._pid == "6162":
+        return deserialize_ExchangeTypesItemsExchangerDescriptionForUserMessage(
+            p)
     return False
 
 
@@ -57,6 +62,71 @@ def deserialize_ExchangeStartedBidBuyerMessage(p: Packet):
     }
 
 
+def deserialize_ExchangeTypesExchangerDescriptionForUserMessage(p: Packet):
+    objectType = p.readInt()
+
+    typeDescriptionLen = p.readUnsignedShort()
+    typeDescription = []
+    for i in range(typeDescriptionLen):
+        typeDescription.append(db.getItemName(p.readVarInt()))
+
+    return {
+        "pid": p._pid,
+        "type": 'ExchangeTypesExchangerDescriptionForUserMessage',
+        "length": p._len,
+        "objectType": objectType,
+        "typeDescriptionLen": typeDescriptionLen,
+        "typeDescription": typeDescription,
+    }
+
+
+def deserialize_ExchangeTypesItemsExchangerDescriptionForUserMessage(
+        p: Packet):
+    objectType = p.readInt()
+
+    itemTypeDescriptionsLen = p.readUnsignedShort()
+    itemTypeDescriptions = []
+    for i in range(itemTypeDescriptionsLen):
+        objectUID = p.readVarInt()
+        objectGID = p.readVarShort()
+        objectType2 = p.readInt()
+        effectsLen = p.readUnsignedShort()
+        effects = []
+        for j in range(effectsLen):
+            id = p.readUnsignedShort()
+            actionId = p.readVarShort()
+            ## TODO ProtocolTypeManager.getInstance(ObjectEffect,_id4)
+            objectEffect = {
+                "id": id,
+                "actionId": actionId,
+            }
+            effects.append(objectEffect)
+        pricesLen = p.readUnsignedShort()
+        prices = []
+        for j in range(pricesLen):
+            prices.append(p.readVarLong())
+
+        bidExchangerObjectInfo = {
+            "objectUID": objectUID,
+            "objectGID": objectGID,
+            "objectType": objectType2,
+            "effectsLen": effectsLen,
+            "effects": effects,
+            "pricesLen": pricesLen,
+            "prices": prices,
+        }
+        itemTypeDescriptions.append(bidExchangerObjectInfo)
+
+    return {
+        "pid": p._pid,
+        "type": 'ExchangeTypesExchangerDescriptionForUserMessage',
+        "length": p._len,
+        "objectType": objectType,
+        "itemTypeDescriptionsLen": itemTypeDescriptionsLen,
+        "itemTypeDescriptions": itemTypeDescriptions,
+    }
+
+
 # Teste :
 
 if __name__ == "__main__":
@@ -67,8 +137,13 @@ if __name__ == "__main__":
         "304d710003010a6400422e2f3035363738393a3b410f446768696a6b6d6e6f779901a401c301b2012223242627282932333c3f42464754575f60626c9801a701b301b601b701b901db01e401e501af019e019f01a001a101a201a301e701e801ee01f101400000003f8000003c04ffffffffa005304d710003010a6400422e2f3035363738393a3b410f446768696a6b6d6e6f779901a401c301b2012223242627282932333c3f42464754575f60626c9801a701b301b601b701b901db01e401e501af019e019f01a001a101a201a301e701e801ee01f101400000003f8000003c04ffffffffa0054128"
     )
 
+    item = Packet(
+        "60491b000000280001e2e609ec050000002800000003ef0d9a9c0195dd084128")
+
     # print(json.dumps(deserialize_ChatServerMessage(chat), indent=2))
     print(
-        json.dumps(deserialize_ExchangeStartedBidBuyerMessage(started_bid),
-                   indent=2,
-                   ensure_ascii=False))
+        json.dumps(
+            deserialize_ExchangeTypesItemsExchangerDescriptionForUserMessage(
+                started_bid),
+            indent=2,
+            ensure_ascii=False))
