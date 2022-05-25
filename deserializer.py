@@ -1,5 +1,9 @@
+from json import encoder
 from packet import Packet
 import json
+from dataBase import DataBase
+
+db = DataBase()
 
 
 def deserialize(p: Packet):
@@ -35,7 +39,8 @@ def deserialize_ExchangeStartedBidBuyerMessage(p: Packet):
     typesLen = p.readUnsignedShort()
     types = []
     for _ in range(typesLen):
-        types.append(p.readVarInt())
+        type_id = p.readVarInt()
+        types.append(db.getTypeName(type_id))
 
     return {
         "pid": p._pid,
@@ -65,4 +70,5 @@ if __name__ == "__main__":
     # print(json.dumps(deserialize_ChatServerMessage(chat), indent=2))
     print(
         json.dumps(deserialize_ExchangeStartedBidBuyerMessage(started_bid),
-                   indent=2))
+                   indent=2,
+                   ensure_ascii=False))

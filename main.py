@@ -2,8 +2,8 @@ import pyshark
 import socket
 import sys
 import json
+from dataBase import DataBase
 from packet import Packet
-from helper import getProtocolIds
 from deserializer import deserialize
 
 # CONFIG
@@ -27,7 +27,7 @@ USE_BLACKLIST = '-bl' in sys.argv
 
 # END CONFIG
 
-protocol_ids = getProtocolIds("protocolIds.txt")
+db = DataBase()
 print('ids loaded')
 capture = pyshark.LiveCapture(interface='Ethernet',
                               bpf_filter='tcp port 5555 and len > 66')
@@ -41,8 +41,8 @@ for packet in capture.sniff_continuously():
         socket.gethostname())
     prefix = "<- " if receiving else "-> "
 
-    if p._pid in protocol_ids:
-        pid_type = protocol_ids[p._pid]
+    if p._pid in db._protocolId:
+        pid_type = db._protocolId[p._pid]
         if USE_BLACKLIST and pid_type in BLACKLIST: continue
         if USE_WHITELIST and pid_type not in WHITELIST: continue
 
