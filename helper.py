@@ -1,9 +1,3 @@
-def getHeader(data):
-    '''Return (protocolId, byte count of length)'''
-    binary = bin(int(data[:4], 16))
-    return (int(binary[:-2], 2), int(binary[-2:], 2))
-
-
 def getProtocolIds(filename):
     protocol_ids_file = open(filename, 'r')
     protocol_ids = dict()

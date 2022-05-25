@@ -1,15 +1,19 @@
 import pyshark
 import socket
 import sys
-from helper import getHeader, getProtocolIds
+import json
+from packet import Packet
+from helper import getProtocolIds
+from deserializer import deserialize
 
-# CONFIG #
+# CONFIG
 
 WHITELIST = [
     'ExchangeTypesItemsExchangerDescriptionForUserMessage',
     'ExchangeTypesExchangerDescriptionForUserMessage',
     'ExchangeStartedBidBuyerMessage', 'ObjectAveragePricesMessage'
 ]
+# WHITELIST = ['ChatServerMessage']
 BLACKLIST = [
     'GameMapMovementMessage',
     'GameMapChangeOrientationMessage',
@@ -21,7 +25,7 @@ BLACKLIST = [
 USE_WHITELIST = '-wl' in sys.argv
 USE_BLACKLIST = '-bl' in sys.argv
 
-# END CONFIG #
+# END CONFIG
 
 protocol_ids = getProtocolIds("protocolIds.txt")
 print('ids loaded')
@@ -32,19 +36,22 @@ print('pyshark connected')
 for packet in capture.sniff_continuously():
     if not hasattr(packet, 'data') or not hasattr(packet.data, 'data'):
         continue
-    data = packet.data.data
+    p = Packet(packet.data.data)
     receiving: bool = packet.ip.src == socket.gethostbyname(
         socket.gethostname())
     prefix = "<- " if receiving else "-> "
 
-    pid = getHeader(data)[0]
-    if pid in protocol_ids:
-        pid_type = protocol_ids[pid]
+    if p._pid in protocol_ids:
+        pid_type = protocol_ids[p._pid]
         if USE_BLACKLIST and pid_type in BLACKLIST: continue
         if USE_WHITELIST and pid_type not in WHITELIST: continue
 
-        # SCAN HERE
-
-        print("%s [id:%s] [type:%s] %s" % (prefix, pid, pid_type, data))
+        obj = deserialize(p)
+        if obj is not False:
+            print("%s %s\n%s" %
+                  (prefix, p._init_data, json.dumps(obj, indent=2)))
+        else:
+            print("%s [id:%s] [type:%s] %s" %
+                  (prefix, p._pid, pid_type, p._init_data))
     else:
-        print("err NOT FOUND PID : %s" % (pid))
+        print("ERR: NOT FOUND PID : %s" % (p._pid))
